@@ -1,0 +1,9 @@
+name: PVA orchestrator
+on: [push]
+jobs:
+  pva:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: pip install click
+      - run: python cli.py

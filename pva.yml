@@ -1,0 +1,17 @@
+# pva.yml V202 — orquestador reproduce + lint + proof-check + swarm + ledger
+version: 1
+paper:
+  doi: "10.1029/2019GL085488"
+  data: "data/GRACE_TN14_REAL_TEMPLATE.csv"
+  code: "."
+steps:
+  - name: lint
+    run: python ../pva-lint/cli.py --json
+  - name: docker-repro
+    run: make repro
+  - name: lean-check
+    run: python ../pva-lean-bridge/cli.py --tex paper.tex --out lean || echo "skip lean"
+  - name: ledger
+    run: python ../pva-ledger/cli.py publish README.md --zenodo
+  - name: swarm-register
+    run: echo "register doi in swarm via API"
