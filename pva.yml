@@ -1,17 +1,23 @@
-# pva.yml V202 — orquestador reproduce + lint + proof-check + swarm + ledger
-version: 1
-paper:
-  doi: "10.1029/2019GL085488"
-  data: "data/GRACE_TN14_REAL_TEMPLATE.csv"
-  code: "."
-steps:
-  - name: lint
-    run: python ../pva-lint/cli.py --json
-  - name: docker-repro
-    run: make repro
-  - name: lean-check
-    run: python ../pva-lean-bridge/cli.py --tex paper.tex --out lean || echo "skip lean"
-  - name: ledger
-    run: python ../pva-ledger/cli.py publish README.md --zenodo
-  - name: swarm-register
-    run: echo "register doi in swarm via API"
+pva:
+  phi_global: 9158.79
+  rho: ">0"
+  fases:
+    - id: 1
+      nombre: Metricas y correlaciones
+      plazo: 2026-2027
+      metrica: PCI>0.31 DFA Higuchi box-counting
+    - id: 2
+      nombre: Predicciones diferenciales IIT/GWT/HOT
+      plazo: 2027-2028
+      experimentos: [epilepsia_generalizada, flow, meditacion_profunda]
+    - id: 3
+      nombre: Intervenciones causales
+      plazo: 2028-2029
+      metodos: [TMS, optogenetica, psicodelicos]
+    - id: 4
+      nombre: Formalizacion matematica
+      plazo: 2029-2030
+      artefactos: [KiPhiBeta.lean, FisherMetric]
+    - id: 5
+      nombre: Extension normativa animales fetos IA
+      plazo: 2030+
