@@ -1,18 +1,17 @@
-# pva-orchestrator V202 — rho(x)>0
+# pva-orchestrator
 
-Orquestador PVA — encadena lint + docker + lean + ledger + swarm con un solo `pva.yml`.
+Orquestador acotado y observable. Sustituye las cinco líneas `OK` y el dashboard verde constantes por estados de descubrimiento y ejecución separados.
 
 ```bash
-python cli.py
+python3 cli.py --workspace ..
+python3 cli.py --workspace .. --target ../pva-lint --run-lint
+python3 -m unittest discover -s tests -v
 ```
 
-Lee pva.yml y ejecuta cada paso.
+El modo predeterminado no ejecuta componentes. `--run-lint` ejecuta únicamente los bytes revisados de `pva-lint/cli.py`, comprobados por SHA-256, en Python aislado y sin propagar credenciales del entorno.
 
-MVP 5/5:
-- pva-lint 0.5
-- pva-docker-template 1.0
-- pva-lean-bridge 2 esqueletos
-- pva-ledger SHA256+DOI
-- pva-swarm FastAPI
+El lint requerido es la revisión de preparación de artefactos del repositorio vecino, no la implementación histórica que confunde presencia con validación científica. Ante divergencia del pin se bloquea; no se descarga ni actualiza código automáticamente.
 
-Parte de PVA ecosistema — bloque 5.
+Un lint terminado deja el pipeline en `partial`. Docker, Lean, ledger y swarm siguen `missing` o `discovered_not_executed`; no se genera una certificación 5/5 ni métricas científicas inventadas. La hoja de ruta histórica `pva.yml` no es configuración ejecutable de este lector.
+
+No se construyen contenedores, llama a modelos o escribe un dashboard por defecto. La salida JSON puede ser preservada por un consumidor autorizado; emitirla no acredita persistencia en red.

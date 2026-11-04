@@ -1,11 +1,7 @@
 {
-  "phi": 5478.42,
-  "repos": [
-    "pva-lint",
-    "pva-docker-template",
-    "pva-lean-bridge",
-    "pva-ledger",
-    "pva-swarm"
-  ],
-  "status": "MVP 5/5 verde"
+  "schema": "pva.pipeline-observation/v1",
+  "execution_status": "not_executed",
+  "complete_pipeline_validated": false,
+  "scientific_claims_validated": false,
+  "note": "Static placeholder only. Run cli.py for a current observation; historical constant green and phi values were not evidence of execution."
 }
