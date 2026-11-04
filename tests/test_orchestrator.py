@@ -36,7 +36,7 @@ class PipelineTests(unittest.TestCase):
         def runner(args, **kwargs):
             self.assertIn("-I", args)
             self.assertIn("-c", args)
-            self.assertEqual(args[3], self.source.read_text())
+            self.assertEqual(args[5], self.source.read_text())
             self.assertNotIn("MIU_API_KEY", kwargs["env"])
             self.assertNotIn("shell", kwargs)
             return SimpleNamespace(returncode=returncode, stdout=json.dumps(output or report()))
@@ -94,6 +94,33 @@ class PipelineTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertEqual(json.loads(result.stdout)["execution_status"], "not_executed")
         self.assertEqual(dashboard.read_bytes(), before)
+
+    def test_real_five_component_local_subset(self):
+        if not all((ROOT.parent / name / relative).is_file() for name, relative, *_ in MODULE.LOCAL):
+            self.skipTest("Reviewed sibling sources required")
+        r = MODULE.inspect(ROOT.parent, ROOT.parent / "pva-lint", run_local=True)
+        self.assertEqual(r["execution_status"], "local_subset_completed", r)
+        self.assertEqual(len([s for s in r["steps"] if s["state"].startswith("completed_")]), 5)
+        for flag in ("complete_pipeline_validated", "scientific_claims_validated",
+                     "external_service_calls", "docker_build_executed", "lean_compilation_executed",
+                     "external_publication_performed", "adversarial_validation_executed"):
+            self.assertIs(r[flag], False)
+
+    def test_partial_evidence_survives_missing_next_source(self):
+        real_lint = ROOT.parent / "pva-lint/cli.py"
+        if not real_lint.is_file():
+            self.skipTest("Reviewed sibling lint required")
+        self.source.write_bytes(real_lint.read_bytes())
+        r = MODULE.inspect(self.workspace, self.workspace, run_local=True)
+        self.assertEqual(r["execution_status"], "blocked_partial")
+        self.assertEqual(r["steps"][0]["state"], "completed_structural_scan")
+        self.assertEqual(r["steps"][1]["state"], "blocked")
+        self.assertIn("report", r["steps"][0])
+
+    def test_execution_modes_mutually_exclusive(self):
+        result = subprocess.run([sys.executable, str(ROOT / "cli.py"), "--run-local", "--run-lint"],
+                                capture_output=True, text=True)
+        self.assertEqual(result.returncode, 2)
 
 
 if __name__ == "__main__":
